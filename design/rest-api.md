@@ -88,6 +88,48 @@ Used to remove a resource
 ```text
 DELETE /order/42/address/2
 ```
+## Payload Request
+
+* Before accepting any incoming request, we should:
+  * check the headers are valid: Content-Type, Version (if needed)
+  * make sure we can't overwhelm the server with a payload too big
+* When reading the payload content, we should be strict and reject any content that contains keys we don't expect as it has two benefits:
+  1. Sometimes as developers we forward the incoming JSON payload to a business flow, without cherry-picking only the expected keys. 
+     A fraudulent consumer could try to inject data like `user_id`, `tenant_id`, etc.. 
+  2. It helps legitimate consumers debug typo when they try to use the API. 
+     Rejecting a payload because `usrename` has been used instead of `username` can save hours of debugging.
+  3. If we later decide to add this key to our API contract, we might break an existing consumer, already sending the information but in an unexpected way.
+     We should keep in mind that if we break an existing customer integration, for any reason, the blame will be on us.
+
+## Payload Response
+
+### Format
+
+Make sure the JSON response can evolve without breaking the API. 
+It can be done by using objects instead of simple key-value for keys that might grow later. 
+It can fill like a premature optimization but will help adding new fields later on without breaking the public API.
+
+For example, if a user can work for a company, and a company only has a name:
+
+```javascript
+// 🛑 don't use flatten objects
+{
+    "id": 42,
+    "email": "john.doe@mail.local",
+    "company_id": 1337,
+    "company_name": "ACME Corp"
+}
+
+// ✅ prefer to use objects
+{
+    "id": 42,
+    "email": "john.doe@mail.local",
+    "company": {
+        "id": 1337,
+        "name": "ACME Corp"
+    }
+}
+```
 
 ## HTTP Status Codes
 
