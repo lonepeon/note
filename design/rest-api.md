@@ -1,5 +1,15 @@
 # REST API
 
+## Endpoints
+
+Endpoints should use **nouns** that represent ,the current entity (e.g `/orders`, `/addresses`, ...) and should be nested when it makes sense (`/users/:id/addresses`). 
+It usually better to be consistent and always use plural form instead of mixing plural and singular form depending of the endpoint.
+
+The [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) action will be represented using HTTP verbs instead of in the path.
+
+The only case where verbs can be added to a path is when we want to support a specific action which can't be represented as a classical CRUD. 
+It's common practice to use `PATCH /orders/:id/dispatched` to mark an order as dispatched or `PATCH /orders/:id/cancel` to cancel an order.
+
 ## Verbs
 
 ### GET
